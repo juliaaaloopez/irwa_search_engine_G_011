@@ -139,3 +139,4 @@ data/
 
 # macOS system files (for your Mac)
 .DS_Store
+**/.DS_Store
