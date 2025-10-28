@@ -134,7 +134,7 @@ dmypy.json
 # dotenv environment variables file
 .env
 .venv
-irwa_env/
+irwa_venv/
 data/
 
 # macOS system files (for your Mac)
