@@ -92,7 +92,7 @@ pip install -r requirements.txt
 - Example visualizations (e.g., word clouds).
 
 ## Part 2 - Indexing, Ranking and Evaluation
-1. Open project_progress/part_2/Part_1.ipynb
+1. Open project_progress/part_2/Part_2.ipynb
 2. Run all cells sequentially. It should
 - Build the inverted-index
 - Create 5 custom queries 
@@ -101,6 +101,7 @@ pip install -r requirements.txt
 
 ----
 # Key Functions
+##Part 1
 | Function                                     | Purpose                                                                             |
 | -------------------------------------------- | ----------------------------------------------------------------------------------- |
 | `setup_preprocessing_tools()`                | Initializes stemmer and stopword list.                                              |
@@ -109,11 +110,35 @@ pip install -r requirements.txt
 | `clean_numeric(value, value_type)`           | Cleans and converts numerical fields.                                               |
 | `extract_product_details()`                  | Processes product attribute list, excluding uninformative fields.                   |
 
+## Part 2
+| Function                                     | Purpose                                                                                   |
+| -------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `build_inverted_index(df)`                   | Builds the inverted index, mapping each token to the set of doc IDs (pids) containing it. |
+| `calculate_log_tf(tokens)`                   | Calculates the log-normalized Term Frequency (TF) for each term in a document.            |
+| `calculate_tfidf_L2_norm(...)`               | Computes the TF-IDF vector and the L2-norm (document length) for a single doc.            |
+| `search_tfidf(query_text, ...)`              | Performs the ranked TF-IDF search using cosine similarity and returns the top K results.  |
+| `precision_at_k(y_true, ...)`                | Calculates Precision@K (P@K).                                                             |
+| `recall_at_k(y_true, ...)`                   | Calculates Recall@K (R@K).                                                                |
+| `avg_precision_at_k(y_true, ...)`            | Calculates Average Precision@K (AP@K).                                                    |
+| `f1_at_k(y_true, ...)`                       | Calculates the F1-Score@K.                                                                |
+| `map_at_k(search_res, ...)`                  | Calculates the Mean Average Precision (MAP) for a set of queries.                         |
+| `mrr_at_k(search_res, ...)`                  | Calculates the Mean Reciprocal Rank (MRR) for a set of queries.                           |
+| `ndcg_at_k(y_true, ...)`                     | Calculates Normalized Discounted Cumulative Gain (NDCG@K).                                |
+| `precision_recall_curve(...)`                | Generates data points for plotting a Precision-Recall curve.                              |
+| `check_missing_scores(df)`                   | Helper utility to check for NaN values in evaluation scores.                              |
 
 ---- 
 ## Results 
 - Cleaned and standardized dataset with consistent text representation saved as processed_dataset.csv in /data.
-- EDA and data visualization of cleaned dataset. 
+- EDA and data visualization of cleaned dataset.
+- An inverted index built from all product text and attributes, saved as inverted_index.json.
+- Pre-calculated corpus-wide IDF scores, saved as idf_scores.json.
+- A ranked TF-IDF search engine (search_tfidf) implemented using log-normalized term frequency and cosine similarity.
+- A comprehensive evaluation suite for standard IR metrics (P@K, R@K, MAP@K, MRR@K, NDCG@K).
+- Performance evaluation of the search engine against the validation_labels.csv ground truth.
+- Precision-Recall curves visualizing system performance for the two validation queries.
+- Manual relevance judgments (ground truth) created for 5 custom test queries.
+- A final performance analysis and P-R curves based on the 5 custom queries.
 
 ---- 
 ## Reproducibility
