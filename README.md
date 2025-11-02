@@ -36,17 +36,23 @@
 This project is part of the IRWA (Information Retrieval and Web Analytics) course and aims to develop a search engine over an e-commerce product catalog.
 It is structured in three main parts:
 
-## Part 1 – Data Preprocessing
+## Part 1 – Data Preprocessing and Exploratory Data Analysis (EDA)
 - Cleaning and normalizing textual, categorical, and numerical fields.
 - Implementing preprocessing functions (setup_preprocessing_tools, preprocess_text, clean_categorical, clean_numeric).
 - Handling product details and unifying descriptive fields.
-
-## Part 2 – Exploratory Data Analysis (EDA)
-
 - Exploring dataset statistics and content distribution.
 - Analyzing brands, sellers, and titles.
 - Visualizing top brands and sellers.
 - Generating word clouds and analyzing frequent words.
+
+## Part 2 - Indexing, Ranking and Evaluation
+- Built an inverted index and stored it as a JSON file.
+- Defined five custom test queries based on frequent dataset terms.
+- Implemented TF-IDF scoring and cosine similarity for document ranking.
+- Computed document-level TF-IDF vectors with L2-normalization.
+- Applied evaluation metrics (P@K, R@K, AP@K, F1, MAP, MRR, NDCG and PR curves).
+- Validated results using predefined queries and relevance labels.
+- Analyzed system performance and proposed improvements. 
 
 ----
 # Installation Instructions
@@ -70,7 +76,7 @@ pip install -r requirements.txt
 
 ----
 # How to Run
-## Part 1 - Data preprocessing
+## Part 1.1 - Data preprocessing
 1. Open project_progress/part_1/Part_1.ipynb in Jupyter Notebook or VS Code.
 2. Run all cells sequentially.
 3. The notebook:
@@ -78,13 +84,20 @@ pip install -r requirements.txt
 - Processes text, categorical, and numeric fields.
 - Outputs a cleaned dataset ready for EDA.
 
-## Part 2 – Exploratory Data Analysis
-1. Open project_progress/part_2/Part_2.ipynb.
+## Part 1.2 – Exploratory Data Analysis
+1. Open project_progress/part_1/Part_1.ipynb.
 2. Run all cells to reproduce plots and statistics:
 - Brand and seller frequency plots.
 - Vocabulary and token distribution.
 - Example visualizations (e.g., word clouds).
-3. The results should match those described in Part_2.pdf.
+
+## Part 2 - Indexing, Ranking and Evaluation
+1. Open project_progress/part_2/Part_1.ipynb
+2. Run all cells sequentially. It should
+- Build the inverted-index
+- Create 5 custom queries 
+- Build ranking based on TF-IDF
+- Evaluate queries through metrics 
 
 ----
 # Key Functions
@@ -99,7 +112,7 @@ pip install -r requirements.txt
 
 ---- 
 ## Results 
-- Cleaned and standardized dataset with consistent text representation.
+- Cleaned and standardized dataset with consistent text representation saved as processed_dataset.csv in /data.
 - EDA and data visualization of cleaned dataset. 
 
 ---- 
