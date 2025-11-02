@@ -101,7 +101,7 @@ pip install -r requirements.txt
 
 ----
 # Key Functions
-##Part 1
+## Part 1
 | Function                                     | Purpose                                                                             |
 | -------------------------------------------- | ----------------------------------------------------------------------------------- |
 | `setup_preprocessing_tools()`                | Initializes stemmer and stopword list.                                              |
