@@ -52,7 +52,14 @@ It is structured in three main parts:
 - Computed document-level TF-IDF vectors with L2-normalization.
 - Applied evaluation metrics (P@K, R@K, AP@K, F1, MAP, MRR, NDCG and PR curves).
 - Validated results using predefined queries and relevance labels.
-- Analyzed system performance and proposed improvements. 
+- Analyzed system performance and proposed improvements.
+
+## Part 3 - Ranking & Filtering
+- Implemented the BM25 ranking algorithm to improve relevance scoring over standard TF-IDF.
+- Developed a custom scoring function ("Our Score") boosting relevance with business metrics like average rating, discount, and brand trust while applying price decay.
+- Implemented semantic search using Word2Vec embeddings and cosine similarity by averaging word vectors.
+- Compared and justified the ranking behavior and performance of TF-IDF, BM25, and the Custom Score
+- Analyzed the limitations of bag-of-words models and proposed advanced document representations like Doc2Vec, Sentence2Vec, and SBERT.
 
 ----
 # Installation Instructions
