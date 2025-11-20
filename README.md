@@ -99,6 +99,17 @@ pip install -r requirements.txt
 - Build ranking based on TF-IDF
 - Evaluate queries through metrics 
 
+## Part 3 - Ranking & Filtering
+1. Open project_progress/part_3/Part_3.ipynb
+2. Run all cells sequentially. It should
+- Preprocess the dataset
+- Define funcitons for TF-IDF, BM25 and a custom ranking formula
+- Rank documents using TF-IDF + cosine similarity.
+- Rank documents using BM25.
+- Rank documents applying a custom ranking formula.
+- Train Word2Vec/Doc2Vec and rank semantically.
+- Compare all methods using metrics like Precision, MAP, MRR, NDCG.
+
 ----
 # Key Functions
 ## Part 1
@@ -127,6 +138,32 @@ pip install -r requirements.txt
 | `precision_recall_curve(...)`                | Generates data points for plotting a Precision-Recall curve.                              |
 | `check_missing_scores(df)`                   | Helper utility to check for NaN values in evaluation scores.                              |
 
+## Part 3
+| Function                                     | Purpose                                                                                   |
+| -------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `safe_literal_eval(val)`                     | Convert string representation of list to actual list.                                     | 
+| `setup_preprocessing_tools()`                | Initializes Porter stemmer and stopword list (with custom additions/removals).            |
+| `preprocess_query(text, stemmer, stop_words)`| Cleans queries: lowercasing, remove punctuation/numbers, tokenize, remove stopwords and non-alphabetic tokens and stem |
+| `calculate_log_tf(tokens)`                   | Calculates log-normalized TF for each term in a document's token list.                    |
+| `calculate_tfidf_L2_norm(tf_scores, ...)`    | Calculates the TF-IDF vector (as a dict) and the L2-norm (length) of that vector for a single document. |
+| `search_tfidf(query_text, ...)`              | Performs a ranked TF-IDF search for a given query.                                        |
+| `bm25_idf(df_t, N)`                          | Computes BM25 IDF for a term.                                                             |
+| `search_bm25(query_text, ...)`               | Ranked list of top-k results following BM25 ranking for a given a query.                  |
+| `search_custom(query_text, ...)`             | Ranked list of top-k results following custom ranking (BM25 boosted by average_rating and discount) for a given a query. |
+| `text_to_vector(text, word2vec_model)`       | Converts text into a single vector using Word2Vec (mean of token vectors).                |
+| `search_word2vec(query_text, ...)`           | Ranks documents using cosine similarity between query and Word2Vec document vectors.      |
+| `search_doc2vec(query_text, ...)`            | Ranks using Doc2Vec representations and cosine similarity.                                |
+| `compare_semantic_rankers(query_text, k=10)` | Returns a DataFrame comparing Word2Vec and Doc2Vec rankings for a query.                  |
+| `precision_at_k(y_true, y_score, k=10)`      | Computes precision@k for ranked results.                                                  |
+| `recall_at_k(y_true, y_score, k=10)`         | Computes Recall@K: fraction of all relevant documents retrieved in the top-K results.     |
+| `avg_precision_at_k(y_true, y_score, k=10)`  | Approximates the area under the precision-recall curve.                                   |
+| `f1_at_k(y_true, y_score, k=10)`             | Computes F1@k combining precision and recall.                                             |
+| `rr_at_k(y_true, y_score, k=10)`             | Returns the inverse of the rank of the first relevant document.                           |
+| `mrr_at_k(search_res, k=10)`                 | Computes mean reciprocal rank across queries.                                             |
+| `dcg_at_k(y_true_sorted, k=10)`              | Computes discounted Cumulative Gain@K.                                                    |
+| `ndcg_at_k(y_true, y_score, k=10)`           | Computes normalized DCG@K.                                                                |
+| `evaluate_method(method_name, ...)`          | Runs a ranking method on all queries and computes evaluation metrics for each.            |
+
 ---- 
 ## Results 
 - Cleaned and standardized dataset with consistent text representation saved as processed_dataset.csv in /data.
@@ -139,10 +176,13 @@ pip install -r requirements.txt
 - Precision-Recall curves visualizing system performance for the two validation queries.
 - Manual relevance judgments (ground truth) created for 5 custom test queries.
 - A final performance analysis and P-R curves based on the 5 custom queries.
+- Three traditional ranked lists for every query: TF-IDF ranking, BM25 ranking and custom ranking (BM25 + boosts)
+- Two semantic ranked lists for every query: Word2Vec ranking and Doc2Vec ranking
+- A combined comparison table showing all five ranking methods side-by-side.
 
 ---- 
 ## Reproducibility
-- All code can be run sequentially in the provided .ipynb files.
+- All code can be run sequentially in the provided .ipynb files. 
 
 
 

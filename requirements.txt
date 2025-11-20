@@ -8,6 +8,7 @@ debugpy==1.8.17
 decorator==5.2.1
 executing==2.2.1
 fonttools==4.60.1
+gensim==4.4.0
 ipykernel==7.0.1
 ipython==9.6.0
 ipython_pygments_lexers==1.1.1
@@ -37,7 +38,9 @@ python-dateutil==2.9.0.post0
 pytz==2025.2
 pyzmq==27.1.0
 regex==2025.10.23
+scipy==1.16.3
 six==1.17.0
+smart_open==7.5.0
 stack-data==0.6.3
 tornado==6.5.2
 tqdm==4.67.1
@@ -45,3 +48,4 @@ traitlets==5.14.3
 tzdata==2025.2
 wcwidth==0.2.14
 wordcloud==1.9.4
+wrapt==2.0.1
