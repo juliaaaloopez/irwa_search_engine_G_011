@@ -70,11 +70,15 @@ def search_form_post():
     
     search_query = request.form['search-query']
 
+    #defaults to TF-IDF if no ranking method is selected
+    ranking_method = request.form.get('ranking-method', 'tfidf') 
+
     session['last_search_query'] = search_query
+    session['last_ranking_method'] = ranking_method
 
     search_id = analytics_data.save_query_terms(search_query)
 
-    results = search_engine.search(search_query, search_id, corpus)
+    results = search_engine.search(search_query, search_id, corpus, ranking_method=ranking_method)
 
     # generate RAG response based on user query and retrieved results
     rag_response = rag_generator.generate_response(search_query, results)
@@ -85,7 +89,7 @@ def search_form_post():
 
     print(session)
 
-    return render_template('results.html', results_list=results, page_title="Results", found_counter=found_count, rag_response=rag_response)
+    return render_template('results.html', results_list=results, page_title="Results", found_counter=found_count, rag_response=rag_response, ranking_method=ranking_method)
 
 
 @app.route('/doc_details', methods=['GET'])
@@ -104,7 +108,10 @@ def doc_details():
     print("recovered var from session:", res)
 
     # get the query string parameters from request
-    clicked_doc_id = request.args["pid"]
+    clicked_doc_id = request.args.get["pid"]
+    if not clicked_doc_id:
+        return render_template("doc_details.html", doc=None, page_title="Document not found")
+    
     print("click in id={}".format(clicked_doc_id))
 
     # store data in statistics table 1
@@ -115,7 +122,23 @@ def doc_details():
 
     print("fact_clicks count for id={} is {}".format(clicked_doc_id, analytics_data.fact_clicks[clicked_doc_id]))
     print(analytics_data.fact_clicks)
-    return render_template('doc_details.html')
+
+    if clicked_doc_id not in corpus: 
+        return render_template("doc_details.html", doc=None, page_title="Document not found")
+    
+    row: Document = corpus[clicked_doc_id]
+    doc = {
+        "pid": row.pid,
+        "title": row.title,
+        "description": row.description,
+        # These may or may not exist depending on how you built Document
+        "url": getattr(row, "url", ""),
+        "brand": getattr(row, "brand", ""),
+        "price": getattr(row, "price", None),
+        "rating": getattr(row, "rating", None),
+        "discount": getattr(row, "discount", None),
+    }
+    return render_template('doc_details.html', doc=doc, page_title=row.title)
 
 
 @app.route('/stats', methods=['GET'])

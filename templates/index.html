@@ -8,6 +8,15 @@
         <form class="d-flex" method="POST" onSubmit='return validate();' action="/search">
             <input class="form-control me-2" name="search-query" type="search" placeholder="Search" aria-label="Search"
                    autofocus="autofocus">
+
+            <select class="form-select me-2" name="ranking_method" aria-label="Ranking method">
+                <option value="tfidf" selected>TF-IDF + Cosine</option>
+                <option value="bm25">BM25</option>
+                <option value="custom">Custom score</option>
+                <option value="word2vec">Word2Vec + Cosine</option>
+                <option value="doc2vec">Doc2Vec + Cosine</option>
+            </select>
+
             <button class="btn btn-primary" type="submit" onclick='this.form.submit();'>Search</button>
             <input name="upf-irwa-hidden" type="hidden" value="123">
         </form>

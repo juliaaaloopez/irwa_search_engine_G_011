@@ -20,6 +20,23 @@
                 {{ item.doc_date }} — {{ item.description }}
             </div>
 
+            <div class = "doc-meta mt-1" style="font-size: 0.9rem; color: #555;">
+                {% if item.brand %}
+                    <strong>Brand:</strong> {{ item.brand }} &nbsp;&nbsp;
+                {% endif %}
+                {% if item.selling_price is not none %}
+                    <strong>Price:</strong> {{ item.selling_price }} &nbsp;&nbsp;
+                {% endif %}
+                {% if item.discount is not none %}
+                    <strong>Discount:</strong> {{ item.discount }} &nbsp;&nbsp;
+                {% endif %}
+                {% if item.rating is not none %}
+                    <strong>Rating:</strong> {{ item.rating }}/5 &nbsp;&nbsp;
+                {% endif %}
+                {% if item.score is not none %}
+                    <strong>Score:</strong> {{ '%.4f' | format(item.score) }}
+                {% endif %}
+            </div>
         </div>
 
     {% endfor %}
