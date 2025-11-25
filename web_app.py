@@ -39,8 +39,17 @@ rag_generator = RAGGenerator()
 # load documents corpus into memory.
 full_path = os.path.realpath(__file__)
 path, filename = os.path.split(full_path)
-file_path = path + "/" + os.getenv("DATA_FILE_PATH")
+
+data_file = os.getenv("DATA_FILE_PATH")
+
+# If the .env variable is missing, use a DEFAULT path
+if data_file is None:
+    data_file = "data/processed_dataset.csv"
+
+file_path = os.path.join(path, data_file)
 corpus = load_corpus(file_path)
+
+
 # Log first element of corpus to verify it loaded correctly:
 print("\nCorpus is loaded... \n First element:\n", list(corpus.values())[0])
 

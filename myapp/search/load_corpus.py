@@ -11,9 +11,12 @@ def load_corpus(path) -> List[Document]:
     :param path:
     :return:
     """
-    df = pd.read_json(path)
-    corpus = _build_corpus(df)
-    return corpus
+    if path.endswith(".json"):
+        df = pd.read_json(path)
+    else:
+        df = pd.read_csv(path)
+        df = df.fillna("")
+    return _build_corpus(df)
 
 def _build_corpus(df: pd.DataFrame) -> Dict[str, Document]:
     """
