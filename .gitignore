@@ -132,10 +132,11 @@ dmypy.json
 /pyvenv.cfg
 
 # dotenv environment variables file
-.env
-.venv
 irwa_venv/
-data/
+venv/
+.env
+
+
 
 # macOS system files (for your Mac)
 .DS_Store
