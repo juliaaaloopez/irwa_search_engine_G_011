@@ -135,7 +135,7 @@ dmypy.json
 irwa_venv/
 venv/
 .env
-
+data/
 
 
 # macOS system files (for your Mac)
