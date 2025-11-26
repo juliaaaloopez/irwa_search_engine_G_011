@@ -128,15 +128,19 @@ def doc_details():
     
     row: Document = corpus[clicked_doc_id]
     doc = {
-        "pid": row.pid,
-        "title": row.title,
-        "description": row.description,
-        # These may or may not exist depending on how you built Document
-        "url": getattr(row, "url", ""),
-        "brand": getattr(row, "brand", ""),
-        "price": getattr(row, "price", None),
-        "rating": getattr(row, "rating", None),
-        "discount": getattr(row, "discount", None),
+    "pid": row.pid,
+    "title": row.title,
+    "description": row.description,
+    "url": row.url or "",
+    "brand": row.brand or "",
+    "selling_price": row.selling_price,
+    "average_rating": row.average_rating,
+    "discount": row.discount,
+    "category": row.category,
+    "sub_category": row.sub_category,
+    "out_of_stock": row.out_of_stock,
+    "images": row.images or [],
+    "product_details": row.product_details or {},
     }
     return render_template('doc_details.html', doc=doc, page_title=row.title)
 
