@@ -25,7 +25,7 @@ def dummy_search(corpus: dict, search_id, num_results=20):
 class SearchEngine:
     """Class that implements the search engine logic"""
 
-    def search(self, search_query, search_id, corpus):
+    def search(self, search_query, search_id, corpus, ranking_method):
         print("Search query:", search_query)
 
         results = []

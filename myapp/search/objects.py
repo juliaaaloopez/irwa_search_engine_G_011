@@ -21,6 +21,7 @@ class Document(BaseModel):
     average_rating: Optional[float] = None
     url: Optional[str] = None
     images: Optional[List[str]] = None
+    score: Optional[float] = None ##ADDED TO MATCH PART 3 DICTIONARIES
 
     def to_json(self):
         return self.model_dump_json()
