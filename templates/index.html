@@ -6,15 +6,15 @@
         <p>&nbsp;</p>
         <p>&nbsp;</p>
         <form class="d-flex" method="GET" onSubmit='return validate();' action="/search">
-            <input class="form-control me-2" name="search-query" type="search" placeholder="Search" aria-label="Search"
+            <input class="form-control me-2" name="search-query" type="search" placeholder="Search..." aria-label="Search"
                    autofocus="autofocus">
 
-            <select class="form-select me-2" name="ranking_method" aria-label="Ranking method">
-                <option value="tfidf" selected>TF-IDF + Cosine</option>
-                <option value="bm25">BM25</option>
-                <option value="custom">Custom score</option>
-                <option value="word2vec">Word2Vec + Cosine</option>
-                <option value="doc2vec">Doc2Vec + Cosine</option>
+            <select name="ranking-method" class="custom-select" style="max-width: 200px;">
+                <option value="tfidf" {% if ranking_method == 'tfidf' %}selected{% endif %}>TF-IDF + Cosine</option>
+                <option value="bm25" {% if ranking_method == 'bm25' %}selected{% endif %}>BM25</option>
+                <option value="custom" {% if ranking_method == 'custom' %}selected{% endif %}>Custom Score</option>
+                <option value="word2vec" {% if ranking_method == 'word2vec' %}selected{% endif %}>Word2Vec + Cosine</option>
+                <option value="doc2vec" {% if ranking_method == 'doc2vec' %}selected{% endif %}>Doc2Vec + Cosine</option>
             </select>
 
             <button class="btn btn-primary" type="submit" onclick='this.form.submit();'>Search</button>

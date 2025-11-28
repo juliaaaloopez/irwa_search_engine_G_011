@@ -17,8 +17,10 @@ def dummy_search(corpus: dict, search_id, num_results=20):
     docs_to_return = np.random.choice(doc_ids, size=num_results, replace=False)
     for doc_id in docs_to_return:
         doc = corpus[doc_id]
-        res.append(Document(pid=doc.pid, title=doc.title, description=doc.description,
-                            url="doc_details?pid={}&search_id={}&param2=2".format(doc.pid, search_id), ranking=random.random()))
+        new_doc = doc.model_copy(update={'score': round(random.random(), 4)})
+        res.append(new_doc)
+        # res.append(Document(pid=doc.pid, title=doc.title, description=doc.description,
+        #                     url="doc_details?pid={}&search_id={}&param2=2".format(doc.pid, search_id), ranking=random.random()))
     return res
 
 
@@ -30,7 +32,8 @@ class SearchEngine:
 
         results = []
         ### You should implement your search logic here:
-        results = dummy_search(corpus, search_id)  # replace with call to search algorithm
+        if ranking_method == 'dummy' or True: # For now we always use dummy search
+            results = dummy_search(corpus, search_id)
 
         # results = search_in_corpus(search_query)
         return results

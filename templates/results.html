@@ -1,6 +1,31 @@
 {% extends "base.html" %}
 {% block page_title %}{{ page_title }}{% endblock %}
 {% block content %}
+    <div class="row mb-4">
+        <div class="col-md-10 mx-auto"> 
+            <form action="/search" method="GET" class="p-3 bg-white rounded">
+                <div class="input-group">
+                    
+                    <input type="text" name="search-query" class="form-control" 
+                        placeholder="Search..." 
+                        value="{{ request.args.get('search-query', '') }}" required>
+
+                    <select name="ranking-method" class="custom-select" style="max-width: 200px;">
+                        <option value="tfidf" {% if ranking_method == 'tfidf' %}selected{% endif %}>TF-IDF + Cosine</option>
+                        <option value="bm25" {% if ranking_method == 'bm25' %}selected{% endif %}>BM25</option>
+                        <option value="custom" {% if ranking_method == 'custom' %}selected{% endif %}>Custom Score</option>
+                        <option value="word2vec" {% if ranking_method == 'word2vec' %}selected{% endif %}>Word2Vec + Cosine</option>
+                        <option value="doc2vec" {% if ranking_method == 'doc2vec' %}selected{% endif %}>Doc2Vec + Cosine</option>
+                    </select>
+
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-primary">Search</button>
+                    </div>
+                    
+                </div>
+            </form>
+        </div>
+    </div>
     Found <strong>{{ found_counter }}</strong> results...
     <hr>
     {% if rag_response %}
@@ -18,7 +43,9 @@
                 </a>
             </div>
             <div class="doc-desc">
-                {{ item.doc_date }} — {{ item.description }}
+                {% if item.description %}
+                    {{ item.doc_date }} — {{ item.description }}
+                {% endif %}
             </div>
 
             <div class = "doc-meta mt-1" style="font-size: 0.9rem; color: #555;">
@@ -29,10 +56,10 @@
                     <strong>Price:</strong> {{ item.selling_price }} &nbsp;&nbsp;
                 {% endif %}
                 {% if item.discount is not none %}
-                    <strong>Discount:</strong> {{ item.discount }} &nbsp;&nbsp;
+                    <strong>Discount:</strong> {{ item.discount | int }}% &nbsp;&nbsp;
                 {% endif %}
                 {% if item.rating is not none %}
-                    <strong>Rating:</strong> {{ item.rating }}/5 &nbsp;&nbsp;
+                    <strong>Rating:</strong> {{ item.average_rating }}/5 &nbsp;&nbsp;
                 {% endif %}
                 {% if item.score is not none %}
                     <strong>Score:</strong> {{ '%.4f' | format(item.score) }}
