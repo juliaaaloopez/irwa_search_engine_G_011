@@ -50,6 +50,15 @@ print("\nCorpus is loaded... \n First element:\n", list(corpus.values())[0])
 def index():
     print("starting home url /...")
 
+    if 'session_id' not in session:
+        session['session_id'] = os.urandom(16).hex() # Generate unique session id
+
+    analytics_data.start_session(
+        session['session_id'], 
+        request.headers.get('User-Agent'), 
+        request.remote_addr
+    )
+
     # flask server creates a session by persisting a cookie in the user's browser.
     # the 'session' object keeps data between multiple requests. Example:
     session['some_var'] = "Some value that is kept in session"
@@ -65,20 +74,33 @@ def index():
     return render_template('index.html', page_title="Welcome")
 
 
-@app.route('/search', methods=['POST'])
+@app.route('/search', methods=['GET'])
 def search_form_post():
     
-    search_query = request.form['search-query']
+    search_query = request.args.get('search-query')
 
     #defaults to TF-IDF if no ranking method is selected
-    ranking_method = request.form.get('ranking-method', 'tfidf') 
+    ranking_method = request.args.get('ranking-method', 'tfidf')
+
+    if not search_query:
+        print("Empty search query received...")
+        return render_template('index.html', page_title="Home")
 
     session['last_search_query'] = search_query
     session['last_ranking_method'] = ranking_method
 
-    search_id = analytics_data.save_query_terms(search_query)
-
-    results = search_engine.search(search_query, search_id, corpus, ranking_method=ranking_method)
+    results = search_engine.search(search_query, None, corpus, ranking_method=ranking_method)
+    
+    if 'session_id' in session:
+        analytics_data.log_search(
+            session['session_id'],
+            search_query,
+            ranking_method,
+            len(results)
+        )
+    else:
+        # Security measure: in case session_id is missing, we log a warning
+        print("Warning: Search performed without session_id")
 
     # generate RAG response based on user query and retrieved results
     rag_response = rag_generator.generate_response(search_query, results)
@@ -101,47 +123,49 @@ def doc_details():
 
     # getting request parameters:
     # user = request.args.get('user')
-    print("doc details session: ")
-    print(session)
+    print("doc details session: ", session)
 
-    res = session["some_var"]
-    print("recovered var from session:", res)
+    res = session.get("some_var")
+
+    if res:
+        print("recovered var from session:", res)
 
     # get the query string parameters from request
-    clicked_doc_id = request.args.get["pid"]
+    clicked_doc_id = request.args.get("pid") or request.form.get("id")
     if not clicked_doc_id:
         return render_template("doc_details.html", doc=None, page_title="Document not found")
     
-    print("click in id={}".format(clicked_doc_id))
+    print(f"click in id={clicked_doc_id}")
 
-    # store data in statistics table 1
-    if clicked_doc_id in analytics_data.fact_clicks.keys():
-        analytics_data.fact_clicks[clicked_doc_id] += 1
+    rank = request.args.get('rank', 1) # Retrieve rank from query parameters
+
+    if 'session_id' in session:
+        analytics_data.log_click(session['session_id'], clicked_doc_id, rank)
     else:
-        analytics_data.fact_clicks[clicked_doc_id] = 1
+        print("Warning: Click without session (user might have cookies disabled)")
 
-    print("fact_clicks count for id={} is {}".format(clicked_doc_id, analytics_data.fact_clicks[clicked_doc_id]))
-    print(analytics_data.fact_clicks)
-
+    
     if clicked_doc_id not in corpus: 
         return render_template("doc_details.html", doc=None, page_title="Document not found")
-    
+
     row: Document = corpus[clicked_doc_id]
+    
     doc = {
-    "pid": row.pid,
-    "title": row.title,
-    "description": row.description,
-    "url": row.url or "",
-    "brand": row.brand or "",
-    "selling_price": row.selling_price,
-    "average_rating": row.average_rating,
-    "discount": row.discount,
-    "category": row.category,
-    "sub_category": row.sub_category,
-    "out_of_stock": row.out_of_stock,
-    "images": row.images or [],
-    "product_details": row.product_details or {},
+        "pid": row.pid,
+        "title": row.title,
+        "description": row.description,
+        "url": row.url or "",
+        "brand": getattr(row, 'brand', '') or getattr(row, 'brand_facet', ''), # Més robust
+        "selling_price": getattr(row, 'selling_price', 'N/A'),
+        "average_rating": getattr(row, 'average_rating', 'N/A'),
+        "discount": getattr(row, 'discount', 'N/A'),
+        "category": getattr(row, 'category', ''),
+        "sub_category": getattr(row, 'sub_category', ''),
+        "out_of_stock": getattr(row, 'out_of_stock', False),
+        "images": getattr(row, 'images', []),
+        "product_details": getattr(row, 'product_details', {}),
     }
+
     return render_template('doc_details.html', doc=doc, page_title=row.title)
 
 
@@ -166,6 +190,9 @@ def stats():
 
 @app.route('/dashboard', methods=['GET'])
 def dashboard():
+
+    charts_html = analytics_data.plot_number_of_views()
+
     visited_docs = []
     for doc_id in analytics_data.fact_clicks.keys():
         d: Document = corpus[doc_id]
@@ -175,8 +202,7 @@ def dashboard():
     # simulate sort by ranking
     visited_docs.sort(key=lambda doc: doc.counter, reverse=True)
 
-    for doc in visited_docs: print(doc)
-    return render_template('dashboard.html', visited_docs=visited_docs)
+    return render_template('dashboard.html', visited_docs=visited_docs, charts_html=charts_html)
 
 
 # New route added for generating an examples of basic Altair plot (used for dashboard)
