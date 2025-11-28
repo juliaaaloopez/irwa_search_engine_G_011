@@ -49,12 +49,12 @@
                 {% endif %}
                 {% if doc.discount is not none %}
                     <p class="mb-1">
-                        <strong>Discount:</strong> {{ doc.discount }}%
+                        <strong>Discount:</strong> {{ doc.discount | int }}%
                     </p>
                 {% endif %}
                 {% if doc.average_rating is not none %}
                     <p class="mb-1">
-                        <strong>Average rating:</strong> {{ "%.1f"|format(doc.average_rating) }} / 5
+                        <strong>Average rating:</strong> {{ "%.1f"|format(doc.average_rating) }}/5
                     </p>
                 {% endif %}
                 <p class="mb-1">

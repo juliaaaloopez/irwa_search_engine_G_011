@@ -53,7 +53,7 @@
                     <strong>Brand:</strong> {{ item.brand }} &nbsp;&nbsp;
                 {% endif %}
                 {% if item.selling_price is not none %}
-                    <strong>Price:</strong> {{ item.selling_price }} &nbsp;&nbsp;
+                    <strong>Price:</strong> {{ item.selling_price }}₹ &nbsp;&nbsp;
                 {% endif %}
                 {% if item.discount is not none %}
                     <strong>Discount:</strong> {{ item.discount | int }}% &nbsp;&nbsp;
