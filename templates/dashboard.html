@@ -2,30 +2,72 @@
 {% block page_title %}{{ page_title }}{% endblock %}
 
 {% block header %}
-    <!-- Next tag loads Charts.js https://www.chartjs.org/docs/latest/ -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.2/chart.min.js"
-            integrity="sha512-tMabqarPtykgDtdtSqCL3uLVM0gS1ZkUAVhRFu1vSEFgvB73niFQWJuvviDyBGBH22Lcau4rHB5p2K2T0Xvr6Q=="
-            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    {# We no longer need Chart.js because Altair charts are self-contained. #}
 {% endblock %}
 
 {% block content %}
 
-    <!--
-    Examples of what to show in Dashboard:
+    <h1 class="mt-4 mb-4">Analytics Dashboard</h1>
 
-    - Ranking of visited documents (from results page)
-    - Visitor's preferred browsers
-    - Visitor's city (from IP)
-    - preferred queries ranking
-    - preferred terms
-    - etc.
+    <!-- 1. Number of views per document -->
+    <h3>1. Number of Views per Document</h3>
+    <p class="text-muted">
+        This bar chart shows how many times each product detail page has been visited.
+    </p>
+    <div>
+        {{ charts.views_chart | safe }}
+    </div>
 
-    -->
+    <hr>
 
-    <h3>Dashboard</h3>
-    <iframe src="/plot_number_of_views" width="600" height="400" style="border: none;"></iframe>
+    <!-- 2. Search volume over time -->
+    <h3>2. Search Volume Over Time</h3>
+    <p class="text-muted">
+        This line chart shows how many searches were made over time. It helps to see peak usage moments.
+    </p>
+    <div>
+        {{ charts.search_volume | safe }}
+    </div>
 
+    <hr>
+
+    <!-- 3. Query length distribution -->
+    <h3>3. Query Length Distribution</h3>
+    <p class="text-muted">
+        This histogram shows how many terms users type in their queries. It describes how complex their information needs are.
+    </p>
+    <div>
+        {{ charts.query_lengths | safe }}
+    </div>
+
+    <hr>
+
+    <!-- 4. Average dwell time per document -->
+    <h3>4. Average Dwell Time per Document</h3>
+    <p class="text-muted">
+        Dwell time is the time between clicking a result and coming back to the results page (by doing another search).
+        Higher dwell time usually means users spent more time reading that product.
+    </p>
+    <div>
+        {{ charts.dwell_time | safe }}
+    </div>
+
+    <hr>
+
+    <!-- 5. List of most clicked documents -->
+    <h3>5. Most Clicked Documents</h3>
+    <p class="text-muted">
+        This list summarises which products received the most clicks overall.
+    </p>
+
+    <ul class="list-group">
+        {% for doc in visited_docs %}
+            <li class="list-group-item">
+                <strong>{{ doc.doc_id }}</strong>
+                — {{ doc.description[:80] }}...
+                <span class="badge bg-primary float-end">{{ doc.counter }} clicks</span>
+            </li>
+        {% endfor %}
+    </ul>
 
 {% endblock %}
-
-

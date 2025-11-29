@@ -92,6 +92,9 @@ def search_form_post():
     results = search_engine.search(search_query, None, corpus, ranking_method=ranking_method)
     
     if 'session_id' in session:
+
+        analytics_data.register_return_to_results(session['session_id'])
+
         analytics_data.log_search(
             session['session_id'],
             search_query,
@@ -191,7 +194,12 @@ def stats():
 @app.route('/dashboard', methods=['GET'])
 def dashboard():
 
-    charts_html = analytics_data.plot_number_of_views()
+    charts = {
+    "views_chart": analytics_data.plot_number_of_views(),        
+    "search_volume": analytics_data.plot_search_volume(),      
+    "query_lengths": analytics_data.plot_query_length_distribution(), 
+    "dwell_time": analytics_data.plot_average_dwell_time(),     
+    }
 
     visited_docs = []
     for doc_id in analytics_data.fact_clicks.keys():
@@ -202,7 +210,7 @@ def dashboard():
     # simulate sort by ranking
     visited_docs.sort(key=lambda doc: doc.counter, reverse=True)
 
-    return render_template('dashboard.html', visited_docs=visited_docs, charts_html=charts_html)
+    return render_template('dashboard.html', visited_docs=visited_docs, charts=charts)
 
 
 # New route added for generating an examples of basic Altair plot (used for dashboard)
