@@ -1,3 +1,4 @@
+import numpy as np
 from pydantic import BaseModel, field_validator
 from typing import Optional, List, Dict, Any
 from datetime import datetime
@@ -5,6 +6,11 @@ import re
 
 
 class Document(BaseModel):
+
+    model_config = {
+        "arbitrary_types_allowed": True
+    }
+
     _id: str
     pid: str
     title: str
@@ -21,8 +27,17 @@ class Document(BaseModel):
     average_rating: Optional[float] = None
     url: Optional[str] = None
     images: Optional[List[str]] = None
+
+    # NEW for ranking
     score: Optional[float] = None ##ADDED TO MATCH PART 3 DICTIONARIES
-    tokens: Optional[List[str]] = [] #To store preprocessed tokens
+    tokens: Optional[List[str]] = None #To store preprocessed tokens
+    processed_text: Optional[list] = None
+    attributes: Optional[list] = None
+    tfidf_vector: Optional[dict] = None
+    doc_length: Optional[float] = None
+    document_vector: Optional[np.ndarray] = None
+    doc2vec_vector: Optional[np.ndarray] = None
+
 
     def to_json(self):
         return self.model_dump_json()
