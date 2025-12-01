@@ -67,12 +67,21 @@ def preprocess_text(text):
 # Helper: Safely restore lists/dicts from strings
 # --------------------------------------------------
 def safe_literal_eval(value):
-    if value is None or (isinstance(value, float) and np.isnan(value)):
+    if value is None:
         return None
-    try:
-        return ast.literal_eval(value)
-    except:
+    if isinstance(value, (list, dict)):
+        return value
+    if isinstance(value, float) and np.isnan(value):
         return None
+    if isinstance(value, str):
+        trimmed = value.strip()
+        if trimmed == "":
+            return None
+        try:
+            return ast.literal_eval(trimmed)
+        except (ValueError, SyntaxError):
+            return None
+    return value
 
 
 # --------------------------------------------------
@@ -92,18 +101,50 @@ def to_numpy_array(value):
     return None
 
 
+def ensure_list(value):
+    if isinstance(value, list):
+        return value
+    parsed = safe_literal_eval(value)
+    if isinstance(parsed, list):
+        return parsed
+    return []
+
+
+def to_bool(value):
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        lowered = value.strip().lower()
+        if lowered in {"true", "1", "yes", "y"}:
+            return True
+        if lowered in {"false", "0", "no", "n"}:
+            return False
+    if isinstance(value, (int, float)):
+        return bool(value)
+    return False
+
+
 # --------------------------------------------------
-# BUILD CORPUS FROM CSV
+# BUILD CORPUS FROM DATA FILE
 # --------------------------------------------------
 def load_corpus(path):
-    print(f"[Corpus] Loading CSV from: {path}")
+    _, ext = os.path.splitext(path)
+    ext = ext.lower()
 
-    df = pd.read_csv(path, engine="python", on_bad_lines="skip")
+    if ext == ".json":
+        print(f"[Corpus] Loading JSON from: {path}")
+        df = pd.read_json(path)
+    else:
+        print(f"[Corpus] Loading CSV from: {path}")
+        df = pd.read_csv(path, engine="python", on_bad_lines="skip")
 
     # Restore fields from string → Python objects
     for col in ["processed_text", "attributes", "tokens"]:
         if col in df.columns:
             df[col] = df[col].apply(safe_literal_eval)
+
+    if "images" in df.columns:
+        df["images"] = df["images"].apply(ensure_list)
 
     # TF-IDF vector (dict stored as string)
     if "tfidf_vector" in df.columns:
@@ -117,11 +158,8 @@ def load_corpus(path):
     if "doc2vec_vector" in df.columns:
         df["doc2vec_vector"] = df["doc2vec_vector"].apply(to_numpy_array)
 
-    # Convert NaN numeric values
-    numeric_cols = ["selling_price", "discount", "average_rating", "actual_price", "doc_length"]
-    for col in numeric_cols:
-        if col in df.columns:
-            df[col] = pd.to_numeric(df[col], errors="coerce")
+    if "out_of_stock" in df.columns:
+        df["out_of_stock"] = df["out_of_stock"].apply(to_bool)
 
     # --------------------------------------------------
     # BUILD THE CORPUS
@@ -181,6 +219,7 @@ def load_corpus(path):
 
         # 3. Combine to final tokens list
         doc.tokens = doc.processed_text + doc.attributes
+        doc.doc_length = len(doc.tokens)
 
         corpus[doc.pid] = doc
 

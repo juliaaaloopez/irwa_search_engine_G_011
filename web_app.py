@@ -158,7 +158,7 @@ def doc_details():
         "title": row.title,
         "description": row.description,
         "url": row.url or "",
-        "brand": getattr(row, 'brand', '') or getattr(row, 'brand_facet', ''), # Més robust
+        "brand": getattr(row, 'brand', '') or getattr(row, 'brand_facet', ''), 
         "selling_price": getattr(row, 'selling_price', 'N/A'),
         "average_rating": getattr(row, 'average_rating', 'N/A'),
         "discount": getattr(row, 'discount', 'N/A'),
