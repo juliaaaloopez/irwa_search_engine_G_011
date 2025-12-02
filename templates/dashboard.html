@@ -1,60 +1,33 @@
 {% extends "base.html" %}
 {% block page_title %}{{ page_title }}{% endblock %}
 
+{% block header %}
+    <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+{% endblock %}
+
 {% block content %}
 
-<h1 class="mt-4 mb-4">Analytics Dashboard</h1>
+    <h1 class="mt-4 mb-4">Analytics Dashboard</h1>
 
-<!-- 1. Number of views per document -->
-<h3>1. Number of Views per Document</h3>
-<p class="text-muted">
-    This bar chart shows how many times each product detail page has been visited.
-</p>
-<div>
-    {{ charts.views_chart | safe }}
-</div>
+    <h3>1. Number of Views per Document</h3>
+    <div id="vis-views"></div> 
+    <hr>
 
-<hr>
+    <h3>2. Search Volume Over Time</h3>
+    <div id="vis-search"></div>
+    <hr>
 
-<!-- 2. Search Volume Over Time -->
-<h3>2. Search Volume Over Time</h3>
-<p class="text-muted">
-    This line chart shows how many searches were made over time. It helps identify peak usage moments.
-</p>
-<div>
-    {{ charts.search_volume | safe }}
-</div>
+    <h3>3. Query Length Distribution</h3>
+    <div id="vis-query"></div>
+    <hr>
 
-<hr>
+    <h3>4. Average Dwell Time per Document</h3>
+    <div id="vis-dwell"></div>
+    <hr>
 
-<!-- 3. Query Length Distribution -->
-<h3>3. Query Length Distribution</h3>
-<p class="text-muted">
-    This histogram shows how many terms users type in their queries.
-</p>
-<div>
-    {{ charts.query_lengths | safe }}
-</div>
-
-<hr>
-
-<!-- 4. Average Dwell Time per Document -->
-<h3>4. Average Dwell Time per Document</h3>
-<p class="text-muted">
-    Dwell time = time between clicking a result and coming back to results.
-</p>
-<div>
-    {{ charts.dwell_time | safe }}
-</div>
-
-<hr>
-
-<!-- 5. Most Clicked Documents -->
-<h3>5. Most Clicked Documents</h3>
-    <p class="text-muted">
-        This list summarises the top 5 products that received the most clicks overall.
-    </p>
-
+    <h3>5. Most Clicked Documents</h3>
     <ul class="list-group">
         {% for doc in visited_docs[:5] %}
             <li class="list-group-item">
@@ -64,5 +37,40 @@
             </li>
         {% endfor %}
     </ul>
+
+    <script type="text/javascript">
+        
+        function renderChart(divId, spec) {
+            if (!spec) {
+                document.querySelector(divId).innerHTML = 
+                    "<div class='alert alert-info'>No data available yet.</div>";
+                return;
+            }
+            // Opció per fer el gràfic responsive sense usar width='container' a Python
+            // spec.width = "container"; 
+            
+            vegaEmbed(divId, spec, {actions: false})
+                .then(result => console.log("Chart rendered in " + divId))
+                .catch(error => {
+                    console.error("Error rendering chart in " + divId, error);
+                    document.querySelector(divId).innerHTML = 
+                        "<div class='alert alert-danger'>Error rendering chart.</div>";
+                });
+        }
+
+        // Recuperem les dades i les convertim a JSON vàlid de JS
+        var viewsChart = {{ charts.views_chart | tojson | safe }};
+        var searchChart = {{ charts.search_volume | tojson | safe }};
+        var queryChart = {{ charts.query_lengths | tojson | safe }};
+        var dwellChart = {{ charts.dwell_time | tojson | safe }};
+
+        console.log("Data loaded:", {viewsChart, searchChart});
+
+        renderChart('#vis-views', viewsChart);
+        renderChart('#vis-search', searchChart);
+        renderChart('#vis-query', queryChart);
+        renderChart('#vis-dwell', dwellChart);
+
+    </script>
 
 {% endblock %}
