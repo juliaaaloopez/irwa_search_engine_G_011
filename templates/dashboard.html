@@ -51,18 +51,18 @@
 
 <!-- 5. Most Clicked Documents -->
 <h3>5. Most Clicked Documents</h3>
-<p class="text-muted">
-    This list summarises which products received the most clicks overall.
-</p>
+    <p class="text-muted">
+        This list summarises the top 5 products that received the most clicks overall.
+    </p>
 
-<ul class="list-group">
-    {% for doc in visited_docs %}
-        <li class="list-group-item">
-            <strong>{{ doc.doc_id }}</strong>
-            — {{ doc.description[:80] }}...
-            <span class="badge bg-primary float-end">{{ doc.counter }} clicks</span>
-        </li>
-    {% endfor %}
-</ul>
+    <ul class="list-group">
+        {% for doc in visited_docs[:5] %}
+            <li class="list-group-item">
+                <strong>{{ doc.doc_id }}</strong>
+                — {{ doc.description[:80] }}...
+                <span class="badge bg-primary text-white float-end">{{ doc.counter }} clicks</span>
+            </li>
+        {% endfor %}
+    </ul>
 
 {% endblock %}
