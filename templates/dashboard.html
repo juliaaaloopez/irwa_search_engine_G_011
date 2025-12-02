@@ -12,22 +12,27 @@
     <h1 class="mt-4 mb-4">Analytics Dashboard</h1>
 
     <h3>1. Number of Views per Document</h3>
+    <p class="text-muted">Number of times each document has been visited.</p>
     <div id="vis-views"></div> 
     <hr>
 
-    <h3>2. Search Volume Over Time</h3>
+    <h3>2. Search Volume</h3>
+    <p class="text-muted">Volume of searches performed over time.</p>
     <div id="vis-search"></div>
     <hr>
 
     <h3>3. Query Length Distribution</h3>
+    <p class="text-muted">Number of times each query length has been used to search (1-10 words).</p>
     <div id="vis-query"></div>
     <hr>
 
     <h3>4. Average Dwell Time per Document</h3>
+    <p class="text-muted">Average time spent looking at each document.</p>
     <div id="vis-dwell"></div>
     <hr>
 
     <h3>5. Most Clicked Documents</h3>
+    <p class="text-muted">List of the top 5 most popular documents based on the total number of clicks.</p>
     <ul class="list-group">
         {% for doc in visited_docs[:5] %}
             <li class="list-group-item">
@@ -46,8 +51,6 @@
                     "<div class='alert alert-info'>No data available yet.</div>";
                 return;
             }
-            // Opció per fer el gràfic responsive sense usar width='container' a Python
-            // spec.width = "container"; 
             
             vegaEmbed(divId, spec, {actions: false})
                 .then(result => console.log("Chart rendered in " + divId))
@@ -58,7 +61,7 @@
                 });
         }
 
-        // Recuperem les dades i les convertim a JSON vàlid de JS
+        // Retrieve the data and convert it to a valid JS JSON object
         var viewsChart = {{ charts.views_chart | tojson | safe }};
         var searchChart = {{ charts.search_volume | tojson | safe }};
         var queryChart = {{ charts.query_lengths | tojson | safe }};

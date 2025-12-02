@@ -79,7 +79,6 @@ class AnalyticsData:
     def get_clicks_df(self):
         return pd.DataFrame(self.clicks)
     
-    # --- FUNCIONS CORREGIDES ---
     
     def plot_number_of_views(self):
         data = [{'Document ID': doc_id, 'Number of Views': count} for doc_id, count in self.fact_clicks.items()]
