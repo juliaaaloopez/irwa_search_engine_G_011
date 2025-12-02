@@ -52,6 +52,7 @@ def index():
 
     if 'session_id' not in session:
         session['session_id'] = os.urandom(16).hex() # Generate unique session id
+        session.modified = True
 
     analytics_data.start_session(
         session['session_id'], 
@@ -76,6 +77,10 @@ def index():
 
 @app.route('/search', methods=['GET'])
 def search_form_post():
+        
+    if 'session_id' not in session:
+        session['session_id'] = os.urandom(16).hex()
+
     
     search_query = request.args.get('search-query')
 
@@ -88,19 +93,22 @@ def search_form_post():
 
     session['last_search_query'] = search_query
     session['last_ranking_method'] = ranking_method
+    session.modified = True
+
 
     results = search_engine.search(search_query, None, corpus, ranking_method=ranking_method)
     
     if 'session_id' in session:
 
+        analytics_data.log_search(
+        session['session_id'],
+        search_query,
+        ranking_method,
+        len(results)
+        )
+
         analytics_data.register_return_to_results(session['session_id'])
 
-        analytics_data.log_search(
-            session['session_id'],
-            search_query,
-            ranking_method,
-            len(results)
-        )
     else:
         # Security measure: in case session_id is missing, we log a warning
         print("Warning: Search performed without session_id")

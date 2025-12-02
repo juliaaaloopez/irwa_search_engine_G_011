@@ -3,7 +3,7 @@ import random
 import altair as alt
 import pandas as pd
 import time
-import datetime       
+from datetime import datetime     
 import httpagentparser
 
 
@@ -40,7 +40,7 @@ class AnalyticsData:
             browser = parsed.get("browser", {}).get("name", "Unknown")
             os_name = parsed.get("os", {}).get("name", "Unknown")
             device = "mobile" if "Mobile" in user_agent else "desktop"
-            timestamp = datetime.datetime.utcnow()
+            timestamp = datetime.utcnow()
 
             self.sessions[session_id] = {
                 "user_agent": user_agent,
@@ -55,8 +55,10 @@ class AnalyticsData:
     
     def log_search(self, session_id, query, ranking_method, results_count):
 
-        n_terms = len(query.split()) if query else 0
-        timestamp = datetime.datetime.utcnow()
+        n_terms = len(query.split()) 
+        timestamp = datetime.utcnow()
+
+
 
         self.requests.append({
             "session_id": session_id,
@@ -66,11 +68,15 @@ class AnalyticsData:
             "results_count": results_count,
             "timestamp": timestamp,  
         })
-        print(f"[Analytics] Search: '{query}' | terms={n_terms}, method={ranking_method}, results={results_count}")
+        print(f"[Analytics] Search logged. Total searches now: {len(self.requests)}")
+
 
     def log_click(self, session_id, doc_id, rank):
 
-        timestamp = datetime.datetime.utcnow()
+        timestamp = datetime.utcnow()
+
+        doc_id = str(doc_id)
+
 
         
         click_record = {
@@ -119,7 +125,10 @@ class AnalyticsData:
             width='container'
         )
         
-        return chart.to_html()
+        html = chart.to_html()     
+        return f'<div id="chart_views">{html}</div>'    
+
+
 
     def register_return_to_results(self, session_id):
         """
@@ -130,7 +139,8 @@ class AnalyticsData:
         if not last:
             return  
 
-        now = datetime.datetime.utcnow()
+        now = datetime.utcnow()
+
         dwell_seconds = (now - last["timestamp"]).total_seconds()
 
         click_index = last["index"]
@@ -150,6 +160,7 @@ class AnalyticsData:
 
         # Convert timestamps to Pandas datetime
         df['timestamp'] = pd.to_datetime(df['timestamp'])
+        df = df.sort_values("timestamp")
 
         # Count searches per minute (or per hour if you prefer)
         df_grouped = df.groupby(pd.Grouper(key='timestamp', freq='1min')).size().reset_index(name='count')
@@ -164,7 +175,8 @@ class AnalyticsData:
             )
             .properties(title="Number of Searches Over Time", width='container', height=250)
         )
-        return chart.to_html()
+        html = chart.to_html()  
+        return f'<div id="chart_search_volume">{html}</div>'  
 
 
 
@@ -185,8 +197,8 @@ class AnalyticsData:
             .properties(title="Distribution of Query Lengths", width='container', height=250)
         )
 
-        return chart.to_html()
-
+        html = chart.to_html()    
+        return f'<div id="chart_query_length">{html}</div>'    
 
 
     def plot_average_dwell_time(self):
@@ -215,7 +227,10 @@ class AnalyticsData:
             .properties(title="Average Dwell Time per Document", width='container', height=250)
         )
 
-        return chart.to_html()
+        html = chart.to_html()     
+        return f'<div id="chart_dwell_time">{html}</div>'      
+
+
 
 
 

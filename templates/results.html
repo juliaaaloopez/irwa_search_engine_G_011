@@ -38,8 +38,8 @@
     {% for item in results_list %}
         <div class="pb-3">
             <div class="doc-title">
-                <a href="{{ url_for('doc_details', pid=item.pid, rank=loop.index) }}">
-                {{ item.title }}...
+                <a href="/doc_details?pid={{ item.pid }}&rank={{ loop.index }}">
+                    {{ item.title }}...
                 </a>
             </div>
             <div class="doc-desc">

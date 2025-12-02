@@ -5,7 +5,10 @@
 {% block content %}
 <div class="container mt-4">
 
-    <a href="javascript:history.back()" class="btn btn-link mb-3">&larr; Back to results</a>
+    <a href="/search?search-query={{ session.last_search_query }}&ranking-method={{ session.last_ranking_method }}"
+        class="btn btn-link mb-3">
+        &larr; Back to results
+    </a>
 
     <div class="row">
         <!-- Left: image -->
