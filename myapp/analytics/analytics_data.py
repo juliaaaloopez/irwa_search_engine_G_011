@@ -89,8 +89,8 @@ class AnalyticsData:
         df = pd.DataFrame(data)
 
         chart = alt.Chart(df).mark_bar().encode(
-            x=alt.X('Document ID:N', axis=alt.Axis(title='Document ID')),
-            y=alt.Y('Number of Views:Q', axis=alt.Axis(title='Vistes'))
+            x=alt.X('Document ID:N', sort='-y', axis=alt.Axis(title='Document ID')),
+            y=alt.Y('Number of Views:Q', axis=alt.Axis(title='Views'))
         ).properties(
             title='Number of Views per Document',
             height=250 
@@ -173,7 +173,7 @@ class AnalyticsData:
             alt.Chart(df_avg)
             .mark_bar()
             .encode(
-                x='doc_id:N',
+                x=alt.X('doc_id:N', sort='-y'),
                 y=alt.Y('dwell_time:Q', title='Average Dwell Time (seconds)'),
                 tooltip=['doc_id:N', 'dwell_time:Q']
             )
