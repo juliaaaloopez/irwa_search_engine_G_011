@@ -148,7 +148,7 @@ class AnalyticsData:
             alt.Chart(df)
             .mark_bar()
             .encode(
-                x=alt.X('n_terms:Q', bin=alt.Bin(maxbins=10, step=1), title='Number of Terms'),
+                x=alt.X('n_terms:O', title='Number of Terms in a Query', sort=list(range(1, 11))),
                 y=alt.Y('count()', title='Frequency'),
                 tooltip=['n_terms:Q', 'count()']
             )
