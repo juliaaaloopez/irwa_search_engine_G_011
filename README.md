@@ -18,6 +18,7 @@
 ```
 /irwa_search_engine_G_011
 ├── data                 # Contains the dataset file (fashion_products_dataset.json)
+├── .env                 # Environment variables (API keys, runtime configuration)
 ├── irwa_venv            # Environment variables for configuration (e.g., API keys)
 ├── myapp                # Contains the main application logic
 ├── project_progress     # Contains your solutions for Parts 1, 2, and 3 of the project
@@ -60,6 +61,11 @@ It is structured in three main parts:
 - Implemented semantic search using Word2Vec embeddings and cosine similarity by averaging word vectors.
 - Compared and justified the ranking behavior and performance of TF-IDF, BM25, and the Custom Score
 - Analyzed the limitations of bag-of-words models and proposed advanced document representations like Doc2Vec, Sentence2Vec, and SBERT.
+
+## Part 4 – RAG, User Interface & Web Analytics
+- Added a Retrieval-Augmented Generation (RAG) layer that summarizes the top retrieved products, constrained to the structured catalog data and current session context.
+- Enhanced the Flask UI with session tracking, AI-generated explanations, and bold highlighting of recommended products to improve usability.
+- Instrumented web analytics (views, clicks, dwell time, dashboards) to monitor user journeys and evaluate both classical ranking and AI guidance.
 
 ----
 # Installation Instructions
@@ -117,6 +123,13 @@ pip install -r requirements.txt
 - Train Word2Vec/Doc2Vec and rank semantically.
 - Compare all methods using metrics like Precision, MAP, MRR, NDCG.
 
+## Part 4 – RAG, UI & Analytics
+1. Ensure `.env` contains valid `SECRET_KEY`, `DATA_FILE_PATH`, and `GROQ_*` credentials.
+2. Start the Flask app with `python web_app.py` (or via your preferred WSGI server).
+3. Navigate to `http://localhost:8088` and perform searches:
+  - The RAG panel will summarize the retrieved products using only catalog facts.
+  - Results, document pages, and dashboards will continuously feed the analytics subsystem (click logs, dwell time, query distribution, etc.).
+
 ----
 # Key Functions
 ## Part 1
@@ -171,6 +184,16 @@ pip install -r requirements.txt
 | `ndcg_at_k(y_true, y_score, k=10)`           | Computes normalized DCG@K.                                                                |
 | `evaluate_method(method_name, ...)`          | Runs a ranking method on all queries and computes evaluation metrics for each.            |
 
+## Part 4
+| Function/Method                                    | Purpose                                                                                              |
+| -------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `RAGGenerator.generate_response(query, results)`   | Builds structured context from the retrieved docs and asks Groq’s LLM for a grounded recommendation.|
+| `AnalyticsData.log_search(session_id, query, …)`   | Stores every search event (query text, ranking method, result count) for later dashboarding.        |
+| `AnalyticsData.log_click(session_id, pid, rank)`   | Tracks document clicks with rank position so we can compute CTR or dwell-time based metrics.        |
+| `AnalyticsData.plot_number_of_views()`             | Produces the Altair chart embedded in the dashboard showing how many users visit over time.        |
+| `AnalyticsData.plot_search_volume()`               | Visualizes query activity per time bucket to correlate demand spikes with system changes.          |
+| `AnalyticsData.plot_average_dwell_time()`          | Highlights engagement by averaging how long users stay on document pages per session.              |
+
 ---- 
 ## Results 
 - Cleaned and standardized dataset with consistent text representation saved as processed_dataset.csv in /data.
@@ -186,10 +209,13 @@ pip install -r requirements.txt
 - Three traditional ranked lists for every query: TF-IDF ranking, BM25 ranking and custom ranking (BM25 + boosts)
 - Two semantic ranked lists for every query: Word2Vec ranking and Doc2Vec ranking
 - A combined comparison table showing all five ranking methods side-by-side.
+- Retrieval-Augmented summaries that highlight the best candidate(s) per query directly inside the UI using only catalog data.
+- Web analytics dashboards (views, search volume, dwell time, click counters) that keep track of user behavior across sessions.
 
 ---- 
 ## Reproducibility
 - All code can be run sequentially in the provided .ipynb files. 
+- The Flask application + RAG/analytics layer runs deterministically using the provided `.env` configuration and JSON dataset, so the full experience can be reproduced locally.
 
 
 
